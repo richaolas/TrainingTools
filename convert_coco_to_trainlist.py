@@ -13,6 +13,20 @@ import matplotlib.pyplot as plt
 import skimage.io as io
 import random
 import fire
+import json
+
+
+'''as 
+img_data = {
+    'image':path
+  #'pixel_data': bytes,
+  'bboxes': [[0.2, .3, .4, .5], [.1, .3, .4, .5]],
+  'labels': [23, 34]
+  'class/text':['xx', 'yyy']
+  'class/label': [0,2]
+}
+
+'''
 
 
 def drawbox(img, box):
@@ -67,13 +81,29 @@ def run(coco_dir):
             print('generating {}'.format(target_f))
             target = open(target_f, 'w')
 
+            target_file = open(target_f+'.json', 'w')
+            target_file.write('[\n')
+            # for idx, item in enumerate(totoal):
+            #     if idx > 0:
+            #
+            #         f.write(',\n' + json.dumps(item))
+            #     else:
+            #         f.write(json.dumps(item))
+            # f.write(']')
+            #
+            # f.close()
+
             # display COCO categories and supercategories
             cats = coco.loadCats(coco.getCatIds())
             imgIds = coco.getImgIds()
 
             random.shuffle(imgIds)
             count_id = 0
+
             for imgId in imgIds:
+
+                annotation = {}
+
                 count_id = count_id+1
                 img = coco.loadImgs(imgId)[0]
 
@@ -84,15 +114,37 @@ def run(coco_dir):
                 anns = coco.loadAnns(annIds)
 
                 anno_part = ''
+                boxs = []
+                label_ids = []
+                label_texts = []
                 for ann in anns:
                     box = ann['bbox']
+                    boxs.append(box)
                     box = [str(i) for i in box]
                     label_id = str(ann['category_id'])
                     one_part = ','.join(box + [label_id])
                     anno_part += ' {}'.format(one_part)
+                    
+                    label_ids.append(ann['category_id'])
+                    #ret = coco.loadCats(ann['category_id'])
+                    label_texts.append(coco.loadCats(ann['category_id'])[0]['name'])
+                    
+                annotation['image'] = img_path
+                annotation['width'] = img['width']
+                annotation['height'] = img['height']
+                annotation['boxs'] = boxs
+                #annotation['data'] =
+                annotation['class-text'] = label_texts
+                annotation['class-id'] = label_ids
 
                 one_line = '{}{}\n'.format(img_path, anno_part)
                 target.write(one_line)
+
+                if count_id == 1:
+                    target_file.write(json.dumps(annotation))
+                else:
+                    target_file.write(',\n' + json.dumps(annotation))
+    target_file.write(']\n')
     print('done!')
 
 
