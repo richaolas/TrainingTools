@@ -16,21 +16,32 @@ import utils.label_map_util as label_map_util
 
 #def dict_to_tf_example(data_dict, dataset_directory):
 
+roi = None
+roi = (320, 80, 320+300, 80 + 200)
 
 def dict_to_tf_example(data_dict, dataset_directory):
     #img_path = os.path.join(data_dict['folder'], image_subdirectory, data_dict['filename'])
+    global roi
     full_path = data_dict['filename']
     if not Path(full_path).exists():
         full_path = os.path.join(dataset_directory, full_path)  # for label image tools
     with tf.io.gfile.GFile(full_path, 'rb') as fid:
         encoded_jpg = fid.read()
+        if roi:
+            encoded_jpg_io = io.BytesIO(encoded_jpg)
+            image = PIL.Image.open(encoded_jpg_io)
+            image = image.crop(roi)
+            image.save('.temp.jpg')
+            with tf.io.gfile.GFile('.temp.jpg', 'rb') as tmp_fid:
+                encoded_jpg = tmp_fid.read()
+
     encoded_jpg_io = io.BytesIO(encoded_jpg)
     image = PIL.Image.open(encoded_jpg_io)
     if image.format != 'JPEG':
         raise ValueError('Image format not JPEG')
 
-    width = data_dict.get('width', image.width)
-    height = data_dict.get('height', image.height)
+    width = image.width #data_dict.get('width', image.width)
+    height = image.height #data_dict.get('height', image.height)
     filename = data_dict['filename']
     source_id = data_dict.get('source_id', filename)
     sha256 = hashlib.sha256(encoded_jpg).hexdigest()

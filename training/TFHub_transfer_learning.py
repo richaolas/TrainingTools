@@ -42,9 +42,9 @@ def resize(d, size=(224, 224)):
 
 #tf.data.Dataset.
 
-(train_x, train_y), (test_x, test_y) = datasets.cifar10.load_data()
-train_x, test_x = resize(train_x[:10000])/255.0, resize(test_x)/255.0
-train_y = train_y[:10000]
+# (train_x, train_y), (test_x, test_y) = datasets.cifar10.load_data()
+# train_x, test_x = resize(train_x[:10000])/255.0, resize(test_x)/255.0
+# train_y = train_y[:10000]
 
 
 feature_extractor_url = 'https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4'
@@ -97,7 +97,7 @@ def read_and_decode(image, label):
     return image, label
 
 
-dataset = tfrecord_to_dataset.tfrecord_to_dataset(r'G:\result.tfrecord')
+dataset = tfrecord_to_dataset.tfrecord_to_dataset(r'E:\statuslight.tfrecord')
 dataset = dataset.repeat() # 重复数据集
 dataset = dataset.map(read_and_decode) # 解析数据
 dataset = dataset.shuffle(buffer_size = 100) # 在缓冲区中随机打乱数据
@@ -109,10 +109,15 @@ history = model.fit(batch,epochs=20,steps_per_epoch=20)
 # print(acc)
 
 model.save('model.h5')
+tf.saved_model.save(model, 'savedmodel3')
+tf.saved_model.save(model, 'saved_model') #可以给其余语言使用的
+
+imported = tf.saved_model.load("saved_model") #直接Load
 
 for idx, (image, label) in enumerate(batch):
-    ret = model.predict(image)
-    print(ret, label)
+   #ret = imported.predict(image)
+   ret = imported(image)
+   print(ret, label)
 
 
 
