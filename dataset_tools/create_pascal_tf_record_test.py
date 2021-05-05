@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Test for create_pascal_tf_record.py."""
+"""Test for create_pascal_tf_record_my.py."""
 
 import os
 

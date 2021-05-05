@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Utility functions for creating TFRecord data sets."""
+"""Utility functions for creating TFRecord .data sets."""
 
 from __future__ import absolute_import
 from __future__ import division

@@ -278,7 +278,7 @@ def export_labelimage_to_voc(samplePath, annotationPath, vocPath):
             fileUtils.copyFile(file, jpgSavePath)
             genSampleList.append(jpgSavePath)
     
-    # return all sample list, than save to the data set list.
+    # return all sample list, than save to the .data set list.
     return genSampleList
 
 def action_create(path, label, del_if_exist):
@@ -293,7 +293,7 @@ def action_export(samplePath, annotationPath, backgroundPath, vocPath):
         list2 = export_background_to_voc(samplePath, annotationPath, backgroundPath, vocPath, show = True)
         sampleList.extend(list2)
         
-    # save image sample list to data set list.    
+    # save image sample list to .data set list.
     if len(sampleList) > 0:
         name = time.strftime("%Y%m%d_%H%M%S", time.localtime())
         fullname = os.path.join(vocPath, 'ImageSets', 'Main', name + '.txt')
@@ -305,8 +305,8 @@ def action_export(samplePath, annotationPath, backgroundPath, vocPath):
                                                                                                                         
 parser = OptionParser(usage="%prog [options]")
 parser.add_option("--action",action="store",type="string",dest="action",help="operate")
-parser.add_option("-d","--data_dir",action="store",default='./',dest="data_dir",help="dir to save the data set")
-parser.add_option("--label", action="store", default='',dest="label",help="data set lable")
+parser.add_option("-d","--data_dir",action="store",default='./',dest="data_dir",help="dir to save the .data set")
+parser.add_option("--label", action="store", default='',dest="label",help=".data set lable")
 parser.add_option("--del_if_exist",action="store", default=False, dest="del_if_exist",help="del_if_exist")
 
 parser.add_option("--sample_path", action="store", dest="sample_path", help="the machine to be check")

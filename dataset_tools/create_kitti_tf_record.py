@@ -49,7 +49,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils.np_box_ops import iou
 
 tf.app.flags.DEFINE_string('data_dir', '', 'Location of root directory for the '
-                           'data. Folder structure is assumed to be:'
+                           '.data. Folder structure is assumed to be:'
                            '<data_dir>/training/label_2 (annotations) and'
                            '<data_dir>/data_object_image_2/training/image_2'
                            '(images).')
@@ -62,7 +62,7 @@ tf.app.flags.DEFINE_string('classes_to_use', 'car,pedestrian,dontcare',
                            'Comma separated list of class names that will be'
                            'used. Adding the dontcare class will remove all'
                            'bboxs in the dontcare regions.')
-tf.app.flags.DEFINE_string('label_map_path', 'data/kitti_label_map.pbtxt',
+tf.app.flags.DEFINE_string('label_map_path', '.data/kitti_label_map.pbtxt',
                            'Path to label map proto.')
 tf.app.flags.DEFINE_integer('validation_set_size', '500', 'Number of images to'
                             'be used as a validation set.')
@@ -74,7 +74,7 @@ def convert_kitti_to_tfrecords(data_dir, output_path, classes_to_use,
   """Convert the KITTI detection dataset to TFRecords.
 
   Args:
-    data_dir: The full path to the unzipped folder containing the unzipped data
+    data_dir: The full path to the unzipped folder containing the unzipped .data
       from data_object_image_2 and data_object_label_2.zip.
       Folder structure is assumed to be: data_dir/training/label_2 (annotations)
       and data_dir/data_object_image_2/training/image_2 (images).
@@ -82,7 +82,7 @@ def convert_kitti_to_tfrecords(data_dir, output_path, classes_to_use,
       with the training set will be located at: <output_path>_train.tfrecord
       And the TFRecord with the validation set will be located at:
       <output_path>_val.tfrecord
-    classes_to_use: List of strings naming the classes for which data should be
+    classes_to_use: List of strings naming the classes for which .data should be
       converted. Use the same names as presented in the KIITI README file.
       Adding dontcare class will remove all other bounding boxes that overlap
       with areas marked as dontcare regions.

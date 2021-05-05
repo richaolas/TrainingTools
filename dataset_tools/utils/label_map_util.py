@@ -199,7 +199,7 @@ def get_label_map_dict(label_map_path_or_proto,
       for value in range(1, max(values)):
         if value not in values:
           # TODO(rathodv): Add a prefix 'class_' here once the tool to generate
-          # teacher annotation adds this prefix in the data.
+          # teacher annotation adds this prefix in the .data.
           label_map_dict[str(value)] = value
 
   return label_map_dict

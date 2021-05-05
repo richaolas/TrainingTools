@@ -133,7 +133,7 @@ def run(coco_dir):
                 annotation['width'] = img['width']
                 annotation['height'] = img['height']
                 annotation['boxs'] = boxs
-                #annotation['data'] =
+                #annotation['.data'] =
                 annotation['class-text'] = label_texts
                 annotation['class-id'] = label_ids
 

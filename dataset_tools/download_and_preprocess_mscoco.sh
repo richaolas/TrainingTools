@@ -14,7 +14,7 @@
 # limitations under the License.
 # ==============================================================================
 
-# Script to download and preprocess the MSCOCO data set for detection.
+# Script to download and preprocess the MSCOCO .data set for detection.
 #
 # The outputs of this script are TFRecord files containing serialized
 # tf.Example protocol buffers. See create_coco_tf_record.py for details of how
@@ -91,7 +91,7 @@ download_and_unzip ${BASE_IMAGE_INFO_URL} ${IMAGE_INFO_FILE}
 
 TESTDEV_ANNOTATIONS_FILE="${SCRATCH_DIR}/annotations/image_info_test-dev2017.json"
 
-# Build TFRecords of the image data.
+# Build TFRecords of the image .data.
 cd "${CURRENT_DIR}"
 python object_detection/dataset_tools/create_coco_tf_record.py \
   --logtostderr \

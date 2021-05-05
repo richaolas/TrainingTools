@@ -59,7 +59,8 @@ def parse_tf(example_proto):
     ymin = parse_example['image/object/bbox/ymin']
     ymax = parse_example['image/object/bbox/ymax']
     print(xmin.values, xmin)
-    boxs = tf.stack([xmin.values, xmax.values, ymin.values, ymax.values], axis=1)
+    #boxs = tf.stack([xmin.values, xmax.values, ymin.values, ymax.values], axis=1)
+    boxs = tf.stack([ymin.values, xmin.values, ymax.values, xmax.values], axis=1)
     # boxes = list(np.stack((ymin.values, xmin.values, ymax.values, xmax.values), axis=1))
     #
     # return image, w, h, zip(xmin, xmax, ymin, ymax)
@@ -74,7 +75,7 @@ def parse_tf_to_image_lable(example_proto):
     image = tf.image.decode_jpeg(image)
     w = parse_example['image/width']
     h = parse_example['image/height']
-
+    #print("image size: %d %d" % (w.numpy(), h.numpy()))
     text = parse_example['image/object/class/text']
     label = parse_example['image/object/class/label']
     xmin = parse_example['image/object/bbox/xmin']
@@ -82,11 +83,14 @@ def parse_tf_to_image_lable(example_proto):
     ymin = parse_example['image/object/bbox/ymin']
     ymax = parse_example['image/object/bbox/ymax']
     print(xmin.values, xmin)
-    boxs = tf.stack([xmin.values, xmax.values, ymin.values, ymax.values], axis=1)
+    #boxes = tf.stack([xmin.values, xmax.values, ymin.values, ymax.values], axis=1)
+    #boxes：指需要划分的区域，输入格式为 [[ymin,xmin,ymax,xmax]] (要注意！这是一个二维列表)
+    boxes = tf.stack([ymin.values, xmin.values, ymax.values, xmax.values], axis=1)
     # boxes = list(np.stack((ymin.values, xmin.values, ymax.values, xmax.values), axis=1))
     #
     # return image, w, h, zip(xmin, xmax, ymin, ymax)
-    return image, label.values
+
+    return image, label.values, boxes
 
 def tfrecord_to_dataset(tfrecord_file):
     dataset = tf.data.TFRecordDataset(tfrecord_file)
@@ -97,27 +101,34 @@ def main(tfrecord_file):
     dataset = tf.data.TFRecordDataset(tfrecord_file)  # 读取 TFRecord 文件
     # dataset = dataset.repeat() # 重复数据集
     dataset = dataset.map(parse_tf)  # 解析数据
+
     font = cv2.FONT_HERSHEY_SIMPLEX
 
     for idx, (image, w, h, boxs, text, label) in enumerate(dataset):
         imgdata = image.numpy()[:, :, ::-1]
         w = w.numpy()
         h = h.numpy()
-        for idx, (x1, x2, y1, y2) in enumerate(boxs.numpy()):
-            print(float(x1 * w))
+        print(w, h)
+        imgdata = imgdata.astype(np.uint8)
+        for idx, (ymin,xmin,ymax,xmax) in enumerate(boxs.numpy()):
+            #print(float(x1 * w))
+            x1,x2,y1,y2 = xmin,xmax,ymin,ymax
+            print(x1,x2,y1,y2)
             # cv2.rectangle(imgdata, (x1 * w, y1 * h), (x2 * w, y2 * h), (0,255,0), 2)
 
             imgdata = cv2.rectangle(imgdata, (int(x1 * w), int(y1 * h)), (int(x2 * w), int(y2 * h)), (255, 0, 0), 2)
             imgdata = cv2.putText(imgdata, bytes.decode(text[idx].numpy()), \
                                   (int(x1 * w), int((int(y1 * h) + int(y2 * h)) / 2)), font, 0.8, (0, 0, 0), 2)
+
         cv2.imshow('', imgdata)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
 def main2(tfrecord_file):
     dataset = tfrecord_to_dataset(tfrecord_file)
-    for idx, (image, label) in enumerate(dataset):
+    for idx, (image, label, boxes) in enumerate(dataset):
         print(image.shape, label.numpy())
+        print(boxes)
 
 if __name__ == '__main__':
-    fire.Fire(main2)
+    fire.Fire(main)
 

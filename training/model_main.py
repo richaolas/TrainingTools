@@ -32,7 +32,7 @@ flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config '
                     'file.')
 flags.DEFINE_integer('num_train_steps', None, 'Number of train steps.')
 flags.DEFINE_boolean('eval_training_data', False,
-                     'If training data should be evaluated for this job. Note '
+                     'If training .data should be evaluated for this job. Note '
                      'that one call only use this in eval-only mode, and '
                      '`checkpoint_dir` must be supplied.')
 flags.DEFINE_integer('sample_1_of_n_eval_examples', 1, 'Will sample one of '
@@ -105,7 +105,7 @@ def main(unused_argv):
     tf.estimator.train_and_evaluate(estimator, train_spec, eval_specs[0])
 
 '''
-python object_detection/model_main.py --logtostderr --pipeline_config_path=/home/models/research/object_detection/samples/configs/ssd_mobilenet_v2_pascal.config --model_dir=/home/data/VOCdekit/ssd_mobilnet_v2 --num_train_steps=50000 --num_eval_steps=500
+python object_detection/model_main.py --logtostderr --pipeline_config_path=/home/models/research/object_detection/samples/configs/ssd_mobilenet_v2_pascal.config --model_dir=/home/.data/VOCdekit/ssd_mobilnet_v2 --num_train_steps=50000 --num_eval_steps=500
 '''
 if __name__ == '__main__':
   app.run()

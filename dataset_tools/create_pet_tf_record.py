@@ -46,7 +46,7 @@ from object_detection.utils import label_map_util
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '', 'Root directory to raw pet dataset.')
 flags.DEFINE_string('output_dir', '', 'Path to directory to output TFRecords.')
-flags.DEFINE_string('label_map_path', 'data/pet_label_map.pbtxt',
+flags.DEFINE_string('label_map_path', '.data/pet_label_map.pbtxt',
                     'Path to label map proto')
 flags.DEFINE_boolean('faces_only', True, 'If True, generates bounding boxes '
                      'for pet faces.  Otherwise generates bounding boxes (as '
@@ -83,7 +83,7 @@ def dict_to_tf_example(data,
   """Convert XML derived dict to tf.Example proto.
 
   Notice that this function normalizes the bounding box coordinates provided
-  by the raw data.
+  by the raw .data.
 
   Args:
     data: dict holding PASCAL XML fields for a single image (obtained by
@@ -91,7 +91,7 @@ def dict_to_tf_example(data,
     mask_path: String path to PNG encoded mask.
     label_map_dict: A map from string label names to integers ids.
     image_subdirectory: String specifying subdirectory within the
-      Pascal dataset directory holding the actual image data.
+      Pascal dataset directory holding the actual image .data.
     ignore_difficult_instances: Whether to skip difficult instances in the
       dataset  (default: False).
     faces_only: If True, generates bounding boxes for pet faces.  Otherwise
@@ -103,7 +103,7 @@ def dict_to_tf_example(data,
     example: The converted tf.Example.
 
   Raises:
-    ValueError: if the image pointed to by data['filename'] is not a valid JPEG
+    ValueError: if the image pointed to by .data['filename'] is not a valid JPEG
   """
   img_path = os.path.join(image_subdirectory, data['filename'])
   with tf.gfile.GFile(img_path, 'rb') as fid:
@@ -276,7 +276,7 @@ def main(_):
   examples_path = os.path.join(annotations_dir, 'trainval.txt')
   examples_list = dataset_util.read_examples_list(examples_path)
 
-  # Test images are not included in the downloaded data set, so we shall perform
+  # Test images are not included in the downloaded .data set, so we shall perform
   # our own split.
   random.seed(42)
   random.shuffle(examples_list)

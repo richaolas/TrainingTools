@@ -33,7 +33,7 @@ def class_text_to_int(row_label):
 
 def split(df, group):
     # 为了构造一个namedtuple需要两个参数，分别是tuple的名字和其中域的名字。
-    data = namedtuple('data', ['filename', 'object'])
+    data = namedtuple('.data', ['filename', 'object'])
     gb = df.groupby(group)
     return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
 

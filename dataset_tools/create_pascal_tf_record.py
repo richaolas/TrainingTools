@@ -58,7 +58,7 @@ flags.DEFINE_string('annotations_dir', 'Annotations',
                     '(Relative) path to annotations directory.')
 flags.DEFINE_string('year', 'VOC2007', 'Desired challenge year.')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-flags.DEFINE_string('label_map_path', 'data/pascal_label_map.pbtxt',
+flags.DEFINE_string('label_map_path', 'G:/Samples/VOC_CUSTOM/demoproject/label_map.pbtxt',
                     'Path to label map proto')
 flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore '
                                                           'difficult instances')
@@ -68,7 +68,7 @@ flags.DEFINE_string('imageset', 'image', 'image set name')
 FLAGS = flags.FLAGS
 
 SETS = ['train', 'val', 'trainval', 'test']
-YEARS = ['VOC2007', 'VOC2012', 'merged']
+YEARS = ['VOC2007', 'VOC2012', 'merged', '2020']
 
 def gen_image_set(data_dir, year, imageset):
     imageset_main_dir = os.path.join(data_dir, year, 'ImageSets', 'Main')
@@ -90,7 +90,7 @@ def dict_to_tf_example(data,
     """Convert XML derived dict to tf.Example proto.
 
     Notice that this function normalizes the bounding box coordinates provided
-    by the raw data.
+    by the raw .data.
 
     Args:
       data: dict holding PASCAL XML fields for a single image (obtained by
@@ -100,18 +100,21 @@ def dict_to_tf_example(data,
       ignore_difficult_instances: Whether to skip difficult instances in the
         dataset  (default: False).
       image_subdirectory: String specifying subdirectory within the
-        PASCAL dataset directory holding the actual image data.
+        PASCAL dataset directory holding the actual image .data.
 
     Returns:
       example: The converted tf.Example.
 
     Raises:
-      ValueError: if the image pointed to by data['filename'] is not a valid JPEG
+      ValueError: if the image pointed to by .data['filename'] is not a valid JPEG
     """
     img_path = os.path.join(data['folder'], image_subdirectory, data['filename'])
     full_path = os.path.join(dataset_directory, img_path)
     if not Path(full_path).exists():
-        full_path = data['path'] # for label image tools
+        full_path = data['path']  # for label image tools
+    if not Path(full_path).exists():
+        year = '2020'
+        full_path = os.path.join(dataset_directory, year, 'JPEGImages', data['filename'])
     with tf.io.gfile.GFile(full_path, 'rb') as fid:
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
@@ -209,7 +212,7 @@ def main(_):
             path = os.path.join(annotations_dir, example + '.xml')
             with tf.io.gfile.GFile(path, 'r') as fid:
                 xml_str = fid.read()
-            xml = etree.fromstring(xml_str)
+            xml = etree.fromstring(xml_str.encode('utf-8'))
             data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
             tf_example = dict_to_tf_example(data, FLAGS.data_dir, label_map_dict,
@@ -220,8 +223,9 @@ def main(_):
 
 #----------------
 # python create_pascal_tf_record.py --action=imageset --data_dir=C:\simpleSample --year=doorline --set=train
-# python create_pascal_tf_record.py --action=tfrecord --data_dir=C:\simpleSample --label_map_path=.\data\test.pbtxt --year=doorline --imageset=image --set=train --output_path=C:\pascal_train.record
+# python create_pascal_tf_record.py --action=tfrecord --data_dir=C:\simpleSample --label_map_path=.\.data\test.pbtxt --year=doorline --imageset=image --set=train --output_path=C:\pascal_train.record
 # python create_pascal_tf_record.py --data_dir=G:\dataset\VOCdevkit --label_map_path=pascal_label_map.pbtxt --year=VOC2012 --set=train --output_path=G:\pascal_train.record
-#
+# >python create_pascal_tf_record.py --data_dir=H:\Samples\VOC\VOCdevkit --label_map_path=.
+# \data\pascal_label_map.pbtxt --year=VOC2012 --imageset=train --set=train --output_path=H:\pascal_train.record
 if __name__ == '__main__':
     app.run(main)

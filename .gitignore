@@ -1,4 +1,13 @@
 .idea
 .data
+.model
+*.tfrecord
 *.h5
 __pycache__
+variables
+*.pb
+variables.*
+*.record
+*.tfrecord
+*.pb
+

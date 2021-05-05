@@ -42,32 +42,34 @@ import PIL.Image
 from pycocotools import mask
 import tensorflow as tf
 
+from absl import app, flags, logging
+
 from object_detection.dataset_tools import tf_record_creation_util
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
 
-flags = tf.app.flags
-tf.flags.DEFINE_boolean('include_masks', False,
+flags = app.flags
+flags.DEFINE_boolean('include_masks', False,
                         'Whether to include instance segmentations masks '
                         '(PNG encoded) in the result. default: False.')
-tf.flags.DEFINE_string('train_image_dir', '',
+flags.DEFINE_string('train_image_dir', '',
                        'Training image directory.')
-tf.flags.DEFINE_string('val_image_dir', '',
+flags.DEFINE_string('val_image_dir', '',
                        'Validation image directory.')
-tf.flags.DEFINE_string('test_image_dir', '',
+flags.DEFINE_string('test_image_dir', '',
                        'Test image directory.')
-tf.flags.DEFINE_string('train_annotations_file', '',
+flags.DEFINE_string('train_annotations_file', '',
                        'Training annotations JSON file.')
-tf.flags.DEFINE_string('val_annotations_file', '',
+flags.DEFINE_string('val_annotations_file', '',
                        'Validation annotations JSON file.')
-tf.flags.DEFINE_string('testdev_annotations_file', '',
+flags.DEFINE_string('testdev_annotations_file', '',
                        'Test-dev annotations JSON file.')
-tf.flags.DEFINE_string('output_dir', '/tmp/', 'Output data directory.')
+flags.DEFINE_string('output_dir', '/tmp/', 'Output .data directory.')
 
 FLAGS = flags.FLAGS
 
-tf.logging.set_verbosity(tf.logging.INFO)
+logging.set_verbosity(logging.INFO)
 
 
 def create_tf_example(image,
@@ -102,7 +104,7 @@ def create_tf_example(image,
     num_annotations_skipped: Number of (invalid) annotations that were ignored.
 
   Raises:
-    ValueError: if the image pointed to by data['filename'] is not a valid JPEG
+    ValueError: if the image pointed to by .data['filename'] is not a valid JPEG
   """
   image_height = image['height']
   image_width = image['width']
@@ -110,7 +112,7 @@ def create_tf_example(image,
   image_id = image['id']
 
   full_path = os.path.join(image_dir, filename)
-  with tf.gfile.GFile(full_path, 'rb') as fid:
+  with tf.io.gfile.GFile(full_path, 'rb') as fid:
     encoded_jpg = fid.read()
   encoded_jpg_io = io.BytesIO(encoded_jpg)
   image = PIL.Image.open(encoded_jpg_io)
@@ -204,7 +206,7 @@ def _create_tf_record_from_coco_annotations(
     num_shards: number of output file shards.
   """
   with contextlib2.ExitStack() as tf_record_close_stack, \
-      tf.gfile.GFile(annotations_file, 'r') as fid:
+      tf.io.gfile.GFile(annotations_file, 'r') as fid:
     output_tfrecords = tf_record_creation_util.open_sharded_output_tfrecords(
         tf_record_close_stack, output_path, num_shards)
     groundtruth_data = json.load(fid)
@@ -252,8 +254,8 @@ def main(_):
   assert FLAGS.val_annotations_file, '`val_annotations_file` missing.'
   assert FLAGS.testdev_annotations_file, '`testdev_annotations_file` missing.'
 
-  if not tf.gfile.IsDirectory(FLAGS.output_dir):
-    tf.gfile.MakeDirs(FLAGS.output_dir)
+  if not tf.io.gfile.isdir(FLAGS.output_dir):
+    tf.io.gfile.makedirs(FLAGS.output_dir)
   train_output_path = os.path.join(FLAGS.output_dir, 'coco_train.record')
   val_output_path = os.path.join(FLAGS.output_dir, 'coco_val.record')
   testdev_output_path = os.path.join(FLAGS.output_dir, 'coco_testdev.record')
@@ -279,4 +281,18 @@ def main(_):
 
 
 if __name__ == '__main__':
-  tf.app.run()
+  app.run(main)
+
+
+'''
+ python create_coco_tf_record.py --logtostderr --train_image_dir="H:\Samples\COCO\train2017" \
+      --val_image_dir="${VAL_IMAGE_DIR}" \
+      --test_image_dir="${TEST_IMAGE_DIR}" \
+      --train_annotations_file="${TRAIN_ANNOTATIONS_FILE}" \
+      --val_annotations_file="${VAL_ANNOTATIONS_FILE}" \
+      --testdev_annotations_file="${TESTDEV_ANNOTATIONS_FILE}" \
+      --output_dir="${OUTPUT_DIR}"
+      
+python create_coco_tf_record.py --logtostderr --train_image_dir="H:\Samples\COCO\train2017" --val_image_dir="H:\Samples\COCO\train2017" --test_image_dir="H:\Samples\COCO\train2017" --train_annotations_file="H:\Samples\COCO\annotations\captions_train2017.json" --val_annotations_file="H:\Samples\COCO\annotations\captions_val2017.json"  --testdev_annotations_file="H:\Samples\COCO\annotationscaptions_train2017.json" --output_dir=H:\
+
+'''

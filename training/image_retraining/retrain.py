@@ -64,7 +64,7 @@ program, for example the tensorflow/examples/label_image sample code.
 
 By default this script will use the highly accurate, but comparatively large and
 slow Inception V3 model architecture. It's recommended that you start with this
-to validate that you have gathered good training data, but if you want to deploy
+to validate that you have gathered good training .data, but if you want to deploy
 on resource-limited platforms, you can try the `--tfhub_module` flag with a
 Mobilenet model. For more information on Mobilenet, see
 https://research.googleblog.com/2017/06/mobilenets-open-source-models-for.html
@@ -153,7 +153,7 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
   """Builds a list of training images from the file system.
 
   Analyzes the sub folders in the image directory, splits them into stable
-  training, testing, and validation sets, and returns a data structure
+  training, testing, and validation sets, and returns a .data structure
   describing the lists of images for each label and their paths.
 
   Args:
@@ -208,9 +208,9 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
     for file_name in file_list:
       base_name = os.path.basename(file_name)
       # We want to ignore anything after '_nohash_' in the file name when
-      # deciding which set to put an image in, the data set creator has a way of
+      # deciding which set to put an image in, the .data set creator has a way of
       # grouping photos that are close variations of each other. For example
-      # this is used in the plant disease data set to group multiple pictures of
+      # this is used in the plant disease .data set to group multiple pictures of
       # the same leaf.
       hash_name = re.sub(r'_nohash_.*$', '', file_name)
       # This looks a bit magical, but we need to decide whether this file should
@@ -297,13 +297,13 @@ def get_bottleneck_path(image_lists, label_name, index, bottleneck_dir,
 
 
 def create_module_graph(module_spec):
-  """Creates a graph and loads Hub Module into it.
+  """Creates a visualization and loads Hub Module into it.
 
   Args:
     module_spec: the hub.ModuleSpec for the image module being used.
 
   Returns:
-    graph: the tf.Graph that was created.
+    visualization: the tf.Graph that was created.
     bottleneck_tensor: the bottleneck values output by the module.
     resized_input_tensor: the input images, resized as expected by the module.
     wants_quantization: a boolean, whether the module has been instrumented
@@ -326,10 +326,10 @@ def run_bottleneck_on_image(sess, image_data, image_data_tensor,
 
   Args:
     sess: Current active TensorFlow Session.
-    image_data: String of raw JPEG data.
-    image_data_tensor: Input data layer in the graph.
+    image_data: String of raw JPEG .data.
+    image_data_tensor: Input .data layer in the visualization.
     decoded_image_tensor: Output of initial image resizing and preprocessing.
-    resized_input_tensor: The input node of the recognition graph.
+    resized_input_tensor: The input node of the recognition visualization.
     bottleneck_tensor: Layer before the final softmax.
 
   Returns:
@@ -384,8 +384,8 @@ def get_or_create_bottleneck(sess, image_lists, label_name, index, image_dir,
                              bottleneck_tensor, module_name):
   """Retrieves or calculates bottleneck values for an image.
 
-  If a cached version of the bottleneck data exists on-disk, return that,
-  otherwise calculate the data and save it to disk for future use.
+  If a cached version of the bottleneck .data exists on-disk, return that,
+  otherwise calculate the .data and save it to disk for future use.
 
   Args:
     sess: The current active TensorFlow Session.
@@ -398,9 +398,9 @@ def get_or_create_bottleneck(sess, image_lists, label_name, index, image_dir,
     category: Name string of which set to pull images from - training, testing,
     or validation.
     bottleneck_dir: Folder string holding cached files of bottleneck values.
-    jpeg_data_tensor: The tensor to feed loaded jpeg data into.
+    jpeg_data_tensor: The tensor to feed loaded jpeg .data into.
     decoded_image_tensor: The output of decoding and resizing the image.
-    resized_input_tensor: The input node of the recognition graph.
+    resized_input_tensor: The input node of the recognition visualization.
     bottleneck_tensor: The output tensor for the bottleneck values.
     module_name: The name of the image module being used.
 
@@ -457,10 +457,10 @@ def cache_bottlenecks(sess, image_lists, image_dir, bottleneck_dir,
     image_dir: Root folder string of the subfolders containing the training
     images.
     bottleneck_dir: Folder string holding cached files of bottleneck values.
-    jpeg_data_tensor: Input tensor for jpeg data from file.
+    jpeg_data_tensor: Input tensor for jpeg .data from file.
     decoded_image_tensor: The output of decoding and resizing the image.
-    resized_input_tensor: The input node of the recognition graph.
-    bottleneck_tensor: The penultimate output layer of the graph.
+    resized_input_tensor: The input node of the recognition visualization.
+    bottleneck_tensor: The penultimate output layer of the visualization.
     module_name: The name of the image module being used.
 
   Returns:
@@ -502,10 +502,10 @@ def get_random_cached_bottlenecks(sess, image_lists, how_many, category,
     bottleneck_dir: Folder string holding cached files of bottleneck values.
     image_dir: Root folder string of the subfolders containing the training
     images.
-    jpeg_data_tensor: The layer to feed jpeg image data into.
+    jpeg_data_tensor: The layer to feed jpeg image .data into.
     decoded_image_tensor: The output of decoding and resizing the image.
-    resized_input_tensor: The input node of the recognition graph.
-    bottleneck_tensor: The bottleneck output layer of the CNN graph.
+    resized_input_tensor: The input node of the recognition visualization.
+    bottleneck_tensor: The bottleneck output layer of the CNN visualization.
     module_name: The name of the image module being used.
 
   Returns:
@@ -556,7 +556,7 @@ def get_random_distorted_bottlenecks(
   If we're training with distortions like crops, scales, or flips, we have to
   recalculate the full model for every image, and so we can't use cached
   bottleneck values. Instead we find random images for the requested category,
-  run them through the distortion graph, and then the full graph to get the
+  run them through the distortion visualization, and then the full visualization to get the
   bottleneck results for each.
 
   Args:
@@ -567,10 +567,10 @@ def get_random_distorted_bottlenecks(
     or validation.
     image_dir: Root folder string of the subfolders containing the training
     images.
-    input_jpeg_tensor: The input layer we feed the image data to.
-    distorted_image: The output node of the distortion graph.
-    resized_input_tensor: The input node of the recognition graph.
-    bottleneck_tensor: The bottleneck output layer of the CNN graph.
+    input_jpeg_tensor: The input layer we feed the image .data to.
+    distorted_image: The output node of the distortion visualization.
+    resized_input_tensor: The input node of the recognition visualization.
+    bottleneck_tensor: The bottleneck output layer of the CNN visualization.
 
   Returns:
     List of bottleneck arrays and their corresponding ground truths.
@@ -625,7 +625,7 @@ def add_input_distortions(flip_left_right, random_crop, random_scale,
   During training it can help to improve the results if we run the images
   through simple distortions like crops, scales, and flips. These reflect the
   kind of variations we expect in the real world, and so can help train the
-  model to cope with natural data more effectively. Here we take the supplied
+  model to cope with natural .data more effectively. Here we take the supplied
   parameters and construct a network of operations to apply them to an image.
 
   Cropping
@@ -666,7 +666,7 @@ def add_input_distortions(flip_left_right, random_crop, random_scale,
     crop box.
     random_scale: Integer percentage of how much to vary the scale by.
     random_brightness: Integer range to randomly multiply the pixel values by.
-    graph.
+    visualization.
     module_spec: The hub.ModuleSpec for the image module being used.
 
   Returns:
@@ -728,7 +728,7 @@ def add_final_retrain_ops(class_count, final_tensor_name, bottleneck_tensor,
   """Adds a new softmax and fully-connected layer for training and eval.
 
   We need to retrain the top layer to identify our new classes, so this function
-  adds the right operations to the graph, along with some variables to hold the
+  adds the right operations to the visualization, along with some variables to hold the
   weights, and then sets up all the gradients for the backward pass.
 
   The set up for the softmax and fully-connected layers is based on:
@@ -738,7 +738,7 @@ def add_final_retrain_ops(class_count, final_tensor_name, bottleneck_tensor,
     class_count: Integer of how many categories of things we're trying to
         recognize.
     final_tensor_name: Name string for the new final node that produces results.
-    bottleneck_tensor: The output of the main CNN graph.
+    bottleneck_tensor: The output of the main CNN visualization.
     quantize_layer: Boolean, specifying whether the newly added layer should be
         instrumented for quantization with TF-Lite.
     is_training: Boolean, specifying whether the newly add layer is for training
@@ -778,8 +778,8 @@ def add_final_retrain_ops(class_count, final_tensor_name, bottleneck_tensor,
 
   final_tensor = tf.nn.softmax(logits, name=final_tensor_name)
 
-  # The tf.contrib.quantize functions rewrite the graph in place for
-  # quantization. The imported model graph has already been rewritten, so upon
+  # The tf.contrib.quantize functions rewrite the visualization in place for
+  # quantization. The imported model visualization has already been rewritten, so upon
   # calling these rewrites, only the newly added final layer will be
   # transformed.
   if quantize_layer:
@@ -790,7 +790,7 @@ def add_final_retrain_ops(class_count, final_tensor_name, bottleneck_tensor,
 
   tf.summary.histogram('activations', final_tensor)
 
-  # If this is an eval graph, we don't need to add loss ops or an optimizer.
+  # If this is an eval visualization, we don't need to add loss ops or an optimizer.
   if not is_training:
     return None, None, bottleneck_input, ground_truth_input, final_tensor
 
@@ -813,7 +813,7 @@ def add_evaluation_step(result_tensor, ground_truth_tensor):
 
   Args:
     result_tensor: The new final node that produces results.
-    ground_truth_tensor: The node we feed ground truth data
+    ground_truth_tensor: The node we feed ground truth .data
     into.
 
   Returns:
@@ -832,17 +832,17 @@ def add_evaluation_step(result_tensor, ground_truth_tensor):
 def run_final_eval(train_session, module_spec, class_count, image_lists,
                    jpeg_data_tensor, decoded_image_tensor,
                    resized_image_tensor, bottleneck_tensor):
-  """Runs a final evaluation on an eval graph using the test data set.
+  """Runs a final evaluation on an eval visualization using the test .data set.
 
   Args:
-    train_session: Session for the train graph with the tensors below.
+    train_session: Session for the train visualization with the tensors below.
     module_spec: The hub.ModuleSpec for the image module being used.
     class_count: Number of classes
     image_lists: OrderedDict of training images for each label.
-    jpeg_data_tensor: The layer to feed jpeg image data into.
+    jpeg_data_tensor: The layer to feed jpeg image .data into.
     decoded_image_tensor: The output of decoding and resizing the image.
-    resized_image_tensor: The input node of the recognition graph.
-    bottleneck_tensor: The bottleneck output layer of the CNN graph.
+    resized_image_tensor: The input node of the recognition visualization.
+    bottleneck_tensor: The bottleneck output layer of the CNN visualization.
   """
   test_bottlenecks, test_ground_truth, test_filenames = (
       get_random_cached_bottlenecks(train_session, image_lists,
@@ -879,10 +879,10 @@ def build_eval_session(module_spec, class_count):
     class_count: Number of classes
 
   Returns:
-    Eval session containing the restored eval graph.
+    Eval session containing the restored eval visualization.
     The bottleneck input, ground truth, eval step, and prediction tensors.
   """
-  # If quantized, we need to create the correct eval graph for exporting.
+  # If quantized, we need to create the correct eval visualization for exporting.
   eval_graph, bottleneck_tensor, resized_input_tensor, wants_quantization = (
       create_module_graph(module_spec))
 
@@ -894,8 +894,8 @@ def build_eval_session(module_spec, class_count):
          class_count, FLAGS.final_tensor_name, bottleneck_tensor,
          wants_quantization, is_training=False)
 
-    # Now we need to restore the values from the training graph to the eval
-    # graph.
+    # Now we need to restore the values from the training visualization to the eval
+    # visualization.
     tf.train.Saver().restore(eval_sess, FLAGS.checkpoint_path)
 
     evaluation_step, prediction = add_evaluation_step(final_tensor,
@@ -906,7 +906,7 @@ def build_eval_session(module_spec, class_count):
 
 
 def save_graph_to_file(graph_file_name, module_spec, class_count):
-  """Saves an graph to file, creating a valid quantized one if necessary."""
+  """Saves an visualization to file, creating a valid quantized one if necessary."""
   sess, _, _, _, _, _ = build_eval_session(module_spec, class_count)
   graph = sess.graph
 
@@ -928,13 +928,13 @@ def prepare_file_system():
 
 
 def add_jpeg_decoding(module_spec):
-  """Adds operations that perform JPEG decoding and resizing to the graph..
+  """Adds operations that perform JPEG decoding and resizing to the visualization..
 
   Args:
     module_spec: The hub.ModuleSpec for the image module being used.
 
   Returns:
-    Tensors for the node to feed JPEG data into, and the output of the
+    Tensors for the node to feed JPEG .data into, and the output of the
       preprocessing steps.
   """
   input_height, input_width = hub.get_expected_image_size(module_spec)
@@ -960,7 +960,7 @@ def export_model(module_spec, class_count, saved_model_dir):
     class_count: The number of classes.
     saved_model_dir: Directory in which to save exported model and variables.
   """
-  # The SavedModel should hold the eval graph.
+  # The SavedModel should hold the eval visualization.
   sess, in_image, _, _, _, _ = build_eval_session(module_spec, class_count)
   with sess.graph.as_default() as graph:
     tf.saved_model.simple_save(
@@ -1029,7 +1029,7 @@ def main(_):
       FLAGS.flip_left_right, FLAGS.random_crop, FLAGS.random_scale,
       FLAGS.random_brightness)
 
-  # Set up the pre-trained graph.
+  # Set up the pre-trained visualization.
   module_spec = hub.load_module_spec(FLAGS.tfhub_module)
   graph, bottleneck_tensor, resized_image_tensor, wants_quantization = (
       create_module_graph(module_spec))
@@ -1047,7 +1047,7 @@ def main(_):
     init = tf.global_variables_initializer()
     sess.run(init)
 
-    # Set up the image decoding sub-graph.
+    # Set up the image decoding sub-visualization.
     jpeg_data_tensor, decoded_image_tensor = add_jpeg_decoding(module_spec)
 
     if do_distort_images:
@@ -1075,7 +1075,7 @@ def main(_):
     validation_writer = tf.summary.FileWriter(
         FLAGS.summaries_dir + '/validation')
 
-    # Create a train saver that is used to restore values into an eval graph
+    # Create a train saver that is used to restore values into an eval visualization
     # when exporting models.
     train_saver = tf.train.Saver()
 
@@ -1096,7 +1096,7 @@ def main(_):
              FLAGS.bottleneck_dir, FLAGS.image_dir, jpeg_data_tensor,
              decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
              FLAGS.tfhub_module)
-      # Feed the bottlenecks and ground truth into the graph, and run a training
+      # Feed the bottlenecks and ground truth into the visualization, and run a training
       # step. Capture training summaries for TensorBoard with the `merged` op.
       train_summary, _ = sess.run(
           [merged, train_step],
@@ -1104,7 +1104,7 @@ def main(_):
                      ground_truth_input: train_ground_truth})
       train_writer.add_summary(train_summary, i)
 
-      # Every so often, print out how well the graph is training.
+      # Every so often, print out how well the visualization is training.
       is_last_step = (i + 1 == FLAGS.how_many_training_steps)
       if (i % FLAGS.eval_step_interval) == 0 or is_last_step:
         train_accuracy, cross_entropy_value = sess.run(
@@ -1115,7 +1115,7 @@ def main(_):
                      datetime.now(), i, train_accuracy * 100)
         logging.info('%s: Step %d: Cross entropy = %f',
                      datetime.now(), i, cross_entropy_value)
-        # TODO: Make this use an eval graph, to avoid quantization
+        # TODO: Make this use an eval visualization, to avoid quantization
         # moving averages being updated by the validation set, though in
         # practice this makes a negligable difference.
         validation_bottlenecks, validation_ground_truth, _ = (
@@ -1141,7 +1141,7 @@ def main(_):
       if (intermediate_frequency > 0 and (i % intermediate_frequency == 0)
           and i > 0):
         # If we want to do an intermediate save, save a checkpoint of the train
-        # graph, to restore into the eval graph.
+        # visualization, to restore into the eval visualization.
         train_saver.save(sess, FLAGS.checkpoint_path)
         intermediate_file_name = (FLAGS.intermediate_output_graphs_dir +
                                   'intermediate_' + str(i) + '.pb')
@@ -1158,7 +1158,7 @@ def main(_):
                    jpeg_data_tensor, decoded_image_tensor, resized_image_tensor,
                    bottleneck_tensor)
 
-    # Write out the trained graph and labels with the weights stored as
+    # Write out the trained visualization and labels with the weights stored as
     # constants.
     logging.info('Save final result to : %s', FLAGS.output_graph)
     if wants_quantization:
@@ -1183,7 +1183,7 @@ if __name__ == '__main__':
       '--output_graph',
       type=str,
       default='/tmp/output_graph.pb',
-      help='Where to save the trained graph.'
+      help='Where to save the trained visualization.'
   )
   parser.add_argument(
       '--intermediate_output_graphs_dir',
@@ -1196,7 +1196,7 @@ if __name__ == '__main__':
       type=int,
       default=0,
       help="""\
-         How many steps to store intermediate graph. If "0" then will not
+         How many steps to store intermediate visualization. If "0" then will not
          store.\
       """
   )
@@ -1204,7 +1204,7 @@ if __name__ == '__main__':
       '--output_labels',
       type=str,
       default='/tmp/output_labels.txt',
-      help='Where to save the trained graph\'s labels.'
+      help='Where to save the trained visualization\'s labels.'
   )
   parser.add_argument(
       '--summaries_dir',
@@ -1291,7 +1291,7 @@ if __name__ == '__main__':
       type=str,
       default='final_result',
       help="""\
-      The name of the output classification layer in the retrained graph.\
+      The name of the output classification layer in the retrained visualization.\
       """
   )
   parser.add_argument(
@@ -1342,7 +1342,7 @@ if __name__ == '__main__':
       '--saved_model_dir',
       type=str,
       default='',
-      help='Where to save the exported graph.')
+      help='Where to save the exported visualization.')
   parser.add_argument(
       '--logging_verbosity',
       type=str,

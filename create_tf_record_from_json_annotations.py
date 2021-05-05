@@ -52,25 +52,25 @@ def dict_to_tf_example(samplepath, annotation):
     """Convert XML derived dict to tf.Example proto.
 
     Notice that this function normalizes the bounding box coordinates provided
-    by the raw data.
+    by the raw .data.
 
     Args:
-      data: dict holding PASCAL XML fields for a single image (obtained by
+      .data: dict holding PASCAL XML fields for a single image (obtained by
         running dataset_util.recursive_parse_xml_to_dict)
       dataset_directory: Path to root directory holding PASCAL dataset
       label_map_dict: A map from string label names to integers ids.
       ignore_difficult_instances: Whether to skip difficult instances in the
         dataset  (default: False).
       image_subdirectory: String specifying subdirectory within the
-        PASCAL dataset directory holding the actual image data.
+        PASCAL dataset directory holding the actual image .data.
 
     Returns:
       example: The converted tf.Example.
 
     Raises:
-      ValueError: if the image pointed to by data['filename'] is not a valid JPEG
+      ValueError: if the image pointed to by .data['filename'] is not a valid JPEG
     """
-    # how to save image data, and what format
+    # how to save image .data, and what format
     image_string = open(samplepath + os.sep + annotation['image'], 'rb').read()
     xmin, xmax, ymin, ymax = [], [], [], []
     width, height = annotation['width'], annotation['height']
@@ -84,7 +84,7 @@ def dict_to_tf_example(samplepath, annotation):
         'image/height': int64_feature(annotation['height']),
         'image/width': int64_feature(annotation['width']),
         'image/filename': bytes_feature(annotation['image'].encode('utf8')),
-        #'image/source_id': dataset_util.bytes_feature(data['filename'].encode('utf8')),
+        #'image/source_id': dataset_util.bytes_feature(.data['filename'].encode('utf8')),
         #'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
         'image/encoded': bytes_feature(image_string),
         'image/format': bytes_feature('jpeg'.encode('utf8')),

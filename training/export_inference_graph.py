@@ -15,12 +15,12 @@
 
 r"""Tool to export an object detection model for inference.
 
-Prepares an object detection tensorflow graph for inference using model
+Prepares an object detection tensorflow visualization for inference using model
 configuration and a trained checkpoint. Outputs inference
-graph, associated checkpoint files, a frozen inference graph and a
+visualization, associated checkpoint files, a frozen inference visualization and a
 SavedModel (https://tensorflow.github.io/serving/serving_basic.html).
 
-The inference graph contains one of three input nodes depending on the user
+The inference visualization contains one of three input nodes depending on the user
 specified option.
   * `image_tensor`: Accepts a uint8 4-D tensor of shape [None, None, None, 3]
   * `encoded_image_string_tensor`: Accepts a 1-D string tensor of shape [None]
@@ -72,7 +72,7 @@ The expected output would be in the directory
 path/to/exported_model_directory (which is created if it does not exist)
 with contents:
  - inference_graph.pbtxt
- - model.ckpt.data-00000-of-00001
+ - model.ckpt..data-00000-of-00001
  - model.ckpt.info
  - model.ckpt.meta
  - frozen_inference_graph.pb
@@ -81,7 +81,7 @@ with contents:
 Config overrides (see the `config_override` flag) are text protobufs
 (also of type pipeline_pb2.TrainEvalPipelineConfig) which are used to override
 certain fields in the provided pipeline_config_path.  These are useful for
-making small changes to the inference graph that differ from the training or
+making small changes to the inference visualization that differ from the training or
 eval config.
 
 Example Usage (in which we change the second stage post-processing score
@@ -133,7 +133,7 @@ flags.DEFINE_string('config_override', '',
                     'pipeline_pb2.TrainEvalPipelineConfig '
                     'text proto to override pipeline_config_path.')
 flags.DEFINE_boolean('write_inference_graph', False,
-                     'If true, writes inference graph to disk.')
+                     'If true, writes inference visualization to disk.')
 tf.app.flags.mark_flag_as_required('pipeline_config_path')
 tf.app.flags.mark_flag_as_required('trained_checkpoint_prefix')
 tf.app.flags.mark_flag_as_required('output_directory')

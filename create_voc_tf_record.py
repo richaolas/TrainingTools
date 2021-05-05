@@ -41,11 +41,11 @@ from object_detection.utils import label_map_util
 # python create_voc_tf_record.py --data_dir=H:/ --data_name=VOC2018 --set=20181219_110106.txt
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', 'C:/', 'Root directory to raw PASCAL VOC dataset.')
-flags.DEFINE_string('data_name', 'VOC2019bands', 'Desired data set name')
+flags.DEFINE_string('data_name', 'VOC2019bands', 'Desired .data set name')
 flags.DEFINE_string('set', '20190315_140146', 'Convert training set, validation set or merged set.')
 flags.DEFINE_string('annotations_dir', 'Annotations',
                     '(Relative) path to annotations directory.')
-#flags.DEFINE_string('data_set', '', 'Desired data set list file name')
+#flags.DEFINE_string('data_set', '', 'Desired .data set list file name')
 
 flags.DEFINE_string('output_path', r'F:/train.tfrecords', 'Path to output TFRecord')
 flags.DEFINE_string('label_map_path', r'C:/VOC2019bands/label_map.pbtxt', 'Path to label map proto')
@@ -64,7 +64,7 @@ def dict_to_tf_example(data,
   """Convert XML derived dict to tf.Example proto.
 
   Notice that this function normalizes the bounding box coordinates provided
-  by the raw data.
+  by the raw .data.
 
   Args:
     data: dict holding PASCAL XML fields for a single image (obtained by
@@ -74,13 +74,13 @@ def dict_to_tf_example(data,
     ignore_difficult_instances: Whether to skip difficult instances in the
       dataset  (default: False).
     image_subdirectory: String specifying subdirectory within the
-      PASCAL dataset directory holding the actual image data.
+      PASCAL dataset directory holding the actual image .data.
 
   Returns:
     example: The converted tf.Example.
 
   Raises:
-    ValueError: if the image pointed to by data['filename'] is not a valid JPEG
+    ValueError: if the image pointed to by .data['filename'] is not a valid JPEG
   """
   img_path = os.path.join(data['folder'], image_subdirectory, data['filename'])
   full_path = os.path.join(dataset_directory, img_path)
@@ -157,8 +157,8 @@ def main(_):
 
   data_names = FLAGS.data_name.split(';')
   if len(data_names) == 0:
-      raise ValueError('data name must be setted')
-  print('data names: ' + str(data_names))    
+      raise ValueError('.data name must be setted')
+  print('.data names: ' + str(data_names))
   
   data_set = FLAGS.set
   if FLAGS.set == '':
@@ -234,30 +234,30 @@ if __name__ == '__main__':
 
 
 # 
-#def dict_to_tf_example(data,
+#def dict_to_tf_example(.data,
 #                       dataset_directory,
 #                       label_map_dict,
 #                       ignore_difficult_instances=False,
 #                       image_subdirectory='JPEGImages'):
 #  """Convert XML derived dict to tf.Example proto.
 #  Notice that this function normalizes the bounding box coordinates provided
-#  by the raw data.
+#  by the raw .data.
 #  Args:
-#    data: dict holding PASCAL XML fields for a single image (obtained by
+#    .data: dict holding PASCAL XML fields for a single image (obtained by
 #      running dataset_util.recursive_parse_xml_to_dict)
 #    dataset_directory: Path to root directory holding PASCAL dataset
 #    label_map_dict: A map from string label names to integers ids.
 #    ignore_difficult_instances: Whether to skip difficult instances in the
 #      dataset  (default: False).
 #    image_subdirectory: String specifying subdirectory within the
-#      PASCAL dataset directory holding the actual image data.
+#      PASCAL dataset directory holding the actual image .data.
 #  Returns:
 #    example: The converted tf.Example.
 #  Raises:
-#    ValueError: if the image pointed to by data['filename'] is not a valid JPEG
+#    ValueError: if the image pointed to by .data['filename'] is not a valid JPEG
 #  """
 #  # 下面这句里的replace就是针对reccoon的标注文件里的filename标签后缀错误而特别添加的
-#  img_path = os.path.join(dataset_directory, data['filename'].replace('.png','.jpg').replace('.PNG','.jpg'))
+#  img_path = os.path.join(dataset_directory, .data['filename'].replace('.png','.jpg').replace('.PNG','.jpg'))
 #  full_path = img_path
 #  with tf.gfile.GFile(full_path, 'rb') as fid:
 #    encoded_jpg = fid.read()
@@ -267,8 +267,8 @@ if __name__ == '__main__':
 #    raise ValueError('Image format not JPEG')
 #  key = hashlib.sha256(encoded_jpg).hexdigest()
 # 
-#  width = int(data['size']['width'])
-#  height = int(data['size']['height'])
+#  width = int(.data['size']['width'])
+#  height = int(.data['size']['height'])
 # 
 #  xmin = []
 #  ymin = []
@@ -280,7 +280,7 @@ if __name__ == '__main__':
 #  poses = []
 #  difficult_obj = []
 #  
-#  for obj in data['object']:
+#  for obj in .data['object']:
 #    difficult = bool(int(obj['difficult']))
 #    if ignore_difficult_instances and difficult:
 #      continue
@@ -300,9 +300,9 @@ if __name__ == '__main__':
 #      'image/height': dataset_util.int64_feature(height),
 #      'image/width': dataset_util.int64_feature(width),
 #      'image/filename': dataset_util.bytes_feature(
-#          data['filename'].encode('utf8')),
+#          .data['filename'].encode('utf8')),
 #      'image/source_id': dataset_util.bytes_feature(
-#          data['filename'].encode('utf8')),
+#          .data['filename'].encode('utf8')),
 #      'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
 #      'image/encoded': dataset_util.bytes_feature(encoded_jpg),
 #      'image/format': dataset_util.bytes_feature('jpeg'.encode('utf8')),
@@ -356,9 +356,9 @@ if __name__ == '__main__':
 #      with tf.gfile.GFile(path, 'r') as fid:
 #        xml_str = fid.read()
 #      xml = etree.fromstring(xml_str)
-#      data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
+#      .data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 # 
-#      tf_example = dict_to_tf_example(data, FLAGS.data_dir, label_map_dict,
+#      tf_example = dict_to_tf_example(.data, FLAGS.data_dir, label_map_dict,
 #                                      FLAGS.ignore_difficult_instances)
 #      writer.write(tf_example.SerializeToString())
 # 

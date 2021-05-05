@@ -17,7 +17,7 @@ def unpickle(file):
 objs = unpickle(r'G:\dataset\cifar-10-batches-py\data_batch_1')
 print(objs)
 
-img = objs[b'data'][0]
+img = objs[b'.data'][0]
 img = img.reshape((3, 32, 32)).transpose(1, 2, 0)[:, :, ::-1]
 # # [rrrr][gggg][bbbb]
 # # [rgb][rgb]

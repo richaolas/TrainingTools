@@ -57,7 +57,7 @@ image_labels = {
 
 image_string = open(cat_in_snow, 'rb').read()
 
-#Image.frombytes(mode="RGB", size=img.size, data=image_string).show()
+#Image.frombytes(mode="RGB", size=img.size, .data=image_string).show()
 
 
 label = image_labels[cat_in_snow]
@@ -111,5 +111,5 @@ for image_features in parsed_image_dataset:
   Image.open(BytesIO(image_raw)).show()
   #img = Image.fromarray(image_raw[:,:,0])
   #img.show()
-  #display.display(display.Image(data=image_raw))
-  #display.Image(data=image_raw).
+  #display.display(display.Image(.data=image_raw))
+  #display.Image(.data=image_raw).

@@ -26,7 +26,7 @@ from object_detection.utils import dataset_util
 
 def tf_example_from_annotations_data_frame(annotations_data_frame, label_map,
                                            encoded_image):
-  """Populates a TF Example message with image annotations from a data frame.
+  """Populates a TF Example message with image annotations from a .data frame.
 
   Args:
     annotations_data_frame: Data frame containing the annotations for a single
