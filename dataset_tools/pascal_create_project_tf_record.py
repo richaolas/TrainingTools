@@ -65,7 +65,7 @@ flags.DEFINE_string('year', 'VOC2007', 'Desired challenge year.')
 # flags.DEFINE_string('project', '', 'Desired project name.')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
 flags.DEFINE_string('label_map_path', '',
-                    'Path to label map proto')  #'./data/pascal_label_map.pbtxt'
+                    'Path to label map proto')  # './data/pascal_label_map.pbtxt'
 flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore '
                                                           'difficult instances')
 
@@ -104,6 +104,15 @@ def gen_image_set(data_dir, year):
                 if os.path.splitext(file)[1] == '.xml':
                     wf.write(os.path.splitext(file)[0] + '\n')
     return image_set_file
+
+
+def range_cast(raw, minval=0.0, maxval=1.0):
+    ret = raw
+    if ret < minval:
+        ret = minval
+    elif ret > maxval:
+        ret = maxval
+    return ret
 
 
 def dict_to_tf_example(data,
@@ -167,10 +176,33 @@ def dict_to_tf_example(data,
 
             difficult_obj.append(int(difficult))
 
-            xmin.append(float(obj['bndbox']['xmin']) / width)
-            ymin.append(float(obj['bndbox']['ymin']) / height)
-            xmax.append(float(obj['bndbox']['xmax']) / width)
-            ymax.append(float(obj['bndbox']['ymax']) / height)
+            # https://github.com/tensorflow/models/issues/8595
+            # https://github.com/tensorflow/models/issues/9067
+            # Resolved. For me the problem was that in some cases 'xmin' were larger than 'xmax'.
+            # To my experience this error appears when there is something wrong with the data.
+            ########### ADDITIONAL CHECKS START HERE ###################
+
+            xmin_ = float(obj['bndbox']['xmin']) / width
+            ymin_ = float(obj['bndbox']['ymin']) / height
+            xmax_ = float(obj['bndbox']['xmax']) / width
+            ymax_ = float(obj['bndbox']['ymax']) / height
+
+            xmin_ = range_cast(xmin_)
+            ymin_ = range_cast(ymin_)
+            xmax_ = range_cast(xmax_)
+            ymax_ = range_cast(ymax_)
+
+            if xmin_ > xmax_:
+                xmin_, xmax_ = xmax_, xmin_
+            if ymin_ > ymax_:
+                ymin_, ymax_ = ymax_, ymin_
+
+            ############ ADDITIONAL CHECKS END HERE ####################
+
+            xmin.append(xmin_)
+            ymin.append(ymin_)
+            xmax.append(xmax_)
+            ymax.append(ymax_)
             classes_text.append(obj['name'].encode('utf8'))
             classes.append(label_map_dict[obj['name']])
             truncated.append(int(obj['truncated']))
@@ -196,6 +228,7 @@ def dict_to_tf_example(data,
         'image/object/truncated': dataset_util.int64_list_feature(truncated),
         'image/object/view': dataset_util.bytes_list_feature(poses),
     }))
+
     return example
 
 
@@ -214,7 +247,7 @@ def main(_):
 
     output_path = FLAGS.output_path
     if not output_path:
-        output_path = os.path.basename(os.path.dirname(data_dir+os.sep)) + '.tfrecord'
+        output_path = os.path.basename(os.path.dirname(data_dir + os.sep)) + '.tfrecord'
     logging.info('Prepare write samples to {}'.format(output_path))
 
     writer = tf.io.TFRecordWriter(output_path)
