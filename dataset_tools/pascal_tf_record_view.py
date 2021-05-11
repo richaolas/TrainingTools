@@ -11,7 +11,10 @@ import tensorflow as tf
 import cv2
 import numpy as np
 import fire
+import os
 
+
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"     # disable gpu
 
 #
 # #其中的参数read_and_decode就是我们定义的解析example的函数，实现如下：
