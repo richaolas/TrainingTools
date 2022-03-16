@@ -120,28 +120,7 @@ def dict_to_tf_example(data_dict, dataset_directory):
 param sample:
 python create_classification_tf_record.py C:\simpleSample\data\ C:\simpleSample\demo.tfrecord
 """
-def main(data_dir, output_path):
-    print('The sample dir is : ', data_dir)
-    statistics = {}
-    # Step1: Create tfrecord writer
-    with tf.io.TFRecordWriter(output_path) as writer:
-        for home, dirs, files in os.walk(data_dir):
-            label_idx = 0
-            for dir in dirs:  # loop all class
-                label_text = dir  # make label name same with the dir name
-                fullname = os.path.join(home, dir)
-                for file in os.listdir(fullname):
-                    data_dict = make_classification_dict(data_dir, file, label_text, label_idx)
-                    print(data_dict)
-                    # Step2: Create sample with some features
-                    example = dict_to_tf_example(data_dict, data_dir)
-                    # Step3: Write to tfrecord file
-                    writer.write(example.SerializeToString())
-                label_idx += 1
-
-
-if __name__ == '__main__':
-    fire.Fire(main)
+1
 
 #
 #
