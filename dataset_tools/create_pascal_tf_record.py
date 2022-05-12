@@ -109,7 +109,7 @@ def gen_image_set(data_folder, imageset):
 
 
 def convert_image_format(full_path, dst_fmt='.jpg'):
-    #path = 'G:/Samples/Customer/officeflower/JPEGImages/0016.bmp'
+    # path = 'G:/Samples/Customer/officeflower/JPEGImages/0016.bmp'
     filepath, tmpfilename = os.path.split(full_path)
     shotname, extension = os.path.splitext(tmpfilename)
     print(filepath, shotname, extension)
@@ -292,7 +292,7 @@ def main(_):
         examples_list = dataset_util.read_examples_list(image_set_path)
         writer = tf.io.TFRecordWriter(
             os.path.splitext(output_path)[0] + '_' + set_name + os.path.splitext(output_path)[1])
-        step = max(len(examples_list)//10//100*100, 10)
+        step = max(len(examples_list) // 10 // 100 * 100, 10)
         for idx, example in enumerate(examples_list):
             if idx % step == 0:
                 logging.info('On image %d of %d', idx, len(examples_list))
@@ -321,18 +321,23 @@ def main(_):
 
 
 """
+usage
 data_dir: root data folder
 name:     task sample name (在data_dir下面的文件夹，默认为空，代表 data_dir 就是数据集目录，而不是所有数据根目录)
 
 如果 data_dir/name/ImageSets/Main 下面没有 train.txt 或者 val.txt 则根据 4:1 比例自动生成
-label_map_dict： 相对于 data_dir/name/
-
+label_map_dict： 相对于 data_dir/name/，路径为 data_dir/name/label_map_dict
 
 分成多个时间(year)文件夹的好处是，可以增量放数据，
 
 """
 
 """
+release note:
+2022/02/17:
+数据集格式：根目录, label_map.pbtxt 放在这个目录下面
+下面命令会自动生成 xxx_train.tfrecord xxx_val.tfrecord
+python create_pascal_tf_record.py --data_dir=data_folder  --output_path=xxx.tfrecord
 
 """
 
@@ -344,13 +349,3 @@ label_map_dict： 相对于 data_dir/name/
 # \data\pascal_label_map.pbtxt --year=VOC2012 --imageset=train --set=train --output_path=H:\pascal_train.record
 if __name__ == '__main__':
     app.run(main)
-
-
-
-"""
-release note:
-2022/02/17:
-数据集格式：根目录, label_map.pbtxt 放在这个目录下面
-python create_pascal_tf_record_my.py --data_dir=G:\Samples\Customer\h52  --output_path=H:\pascal_train.record
-
-"""
