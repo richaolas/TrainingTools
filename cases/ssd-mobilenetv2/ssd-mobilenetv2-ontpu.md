@@ -8,4 +8,12 @@ python object_detection/model_main_tf2.py --pipeline_config_path=/media/dev/home
 3. export to tflite_saved_model then convert saved_model to tflite 
 4. export to tflite_saved_model then convert saved_model to qu-tflite 
 5. compile the qu-tflite to edge-tpu, then deploy on the camera
-6. 
+
+```
+PIPELINE_CONFIG_PATH={path to pipeline config file}
+MODEL_DIR={path to model directory}
+CHECKPOINT_DIR=${MODEL_DIR}
+MODEL_DIR={path to model directory}
+python object_detection/model_main_tf2.py --pipeline_config_path=C:/cases/missingbelt/models/my_model_dir/pipeline.config --model_dir=C:/cases/missingbelt/val --checkpoint_dir=C:/cases/missingbelt/train --alsologtostderr
+
+```

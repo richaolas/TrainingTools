@@ -149,10 +149,13 @@ def dict_to_tf_example(data,
     """
     img_path = os.path.join(data['folder'], image_subdirectory, data['filename'])
     full_path = os.path.join(dataset_directory, img_path)
-    if not Path(full_path).exists():
+    if not Path(full_path).exists() and 'path' in data and data['path']:
         full_path = data['path']  # for label image tools
     if not Path(full_path).exists():
         full_path = os.path.join(dataset_directory, 'JPEGImages', data['filename'])
+    if not Path(full_path).exists():
+        name, ext = os.path.splitext(full_path)
+        full_path = name + '.jpg'
     if not Path(full_path).exists():
         logging.error('Image not find at %s', full_path)
         return
@@ -204,7 +207,13 @@ def dict_to_tf_example(data,
             classes_text.append(obj['name'].encode('utf8'))
             classes.append(label_map_dict[obj['name']])
             truncated.append(int(obj['truncated']))
-            poses.append(obj['pose'].encode('utf8'))
+            if 'pose' in obj and obj['pose']:
+                poses.append(obj['pose'].encode('utf8'))
+            else:
+                poses.append('undefined'.encode('utf8'))
+
+    if not xmin:
+        return None
 
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
@@ -308,8 +317,11 @@ def main(_):
             with tf.io.gfile.GFile(path, 'r') as fid:
                 xml_str = fid.read()
             xml = etree.fromstring(xml_str.encode('utf-8'))
-            data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
-
+            data_dic = dataset_util.recursive_parse_xml_to_dict(xml) #['annotation']
+            if 'annotation' in data_dic:
+                data = data_dic['annotation']
+            elif 'Annotation' in data_dic:
+                data = data_dic['Annotation']
             # logging.info("Create tf example for %s.", path)
 
             tf_example = dict_to_tf_example(data, data_folder, label_map_dict,
