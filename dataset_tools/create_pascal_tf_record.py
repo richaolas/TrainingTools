@@ -112,7 +112,7 @@ def convert_image_format(full_path, dst_fmt='.jpg'):
     # path = 'G:/Samples/Customer/officeflower/JPEGImages/0016.bmp'
     filepath, tmpfilename = os.path.split(full_path)
     shotname, extension = os.path.splitext(tmpfilename)
-    print(filepath, shotname, extension)
+    # print(filepath, shotname, extension)
     if extension != '.jpg':
         dst = os.path.join(filepath, shotname + dst_fmt)
         img = cv2.imread(full_path)
@@ -161,7 +161,7 @@ def dict_to_tf_example(data,
     if not Path(full_path).exists():
         logging.error('Image not find at %s', full_path)
         return
-    print('##', full_path)
+    print('Process', full_path)
     ## convert image format
     full_path = convert_image_format(full_path)
 
@@ -247,6 +247,12 @@ def main(_):
     data_folder = os.path.join(data_dir, name)
     annotations_dir = os.path.join(data_dir, name, FLAGS.annotations_dir)
     all_annotations = get_all_annotations(annotations_dir)
+    # msg = f"""
+    #     data folder: {data_folder},
+    #     annotations dir: {annotations_dir},
+    #
+    # """
+    # print()
 
     train_set = os.path.join(data_folder, "ImageSets", "Main") + os.sep + 'train.txt'
     val_set = os.path.join(data_folder, "ImageSets", "Main") + os.sep + 'val.txt'
@@ -254,14 +260,30 @@ def main(_):
     if not os.path.exists(train_set):
         logging.info("Train set not fount, generate 80% from all data.")
         write_annotations(all_annotations[:int(len(all_annotations) * 0.8)], data_folder, 'train')
+    else:
+        train_set_number = 0
+        with open(train_set) as f:
+            for line in f.readlines():
+                if line.strip():
+                    train_set_number += 1
+
+        logging.info(f"Using {train_set} which has total {train_set_number} training sample")
 
     if not os.path.exists(val_set):
         logging.info("Validate set not fount, generate 20% from all data.")
         write_annotations(all_annotations[int(len(all_annotations) * 0.8):], data_folder, 'val')
+    else:
+        val_set_number = 0
+        with open(val_set) as f:
+            for line in f.readlines():
+                if line.strip():
+                    val_set_number += 1
+
+        logging.info(f"Using {val_set} which has total {val_set_number} validate sample")
 
     label_map_path = FLAGS.label_map_path
     if not os.path.exists(label_map_path):
-        logging.info("%s not fount, try to find at %s", label_map_path, data_folder)
+        logging.info("Label map not fount in %s(FLAGS.label_map_path), try to find at %s", label_map_path, data_folder)
         label_map_path = os.path.join(data_folder, FLAGS.label_map_path)
         if not os.path.exists(label_map_path):
             logging.info("%s not fount, failed!", label_map_path)
@@ -277,33 +299,19 @@ def main(_):
     logging.info("Using label map path: %s.", label_map_path)
     logging.info("Using annotations dir: %s.", annotations_dir)
     logging.info("Using output path: %s.", output_path)
+
+    ans = input("Press Y to confirm, N to exit. (Y/N)")
+    if ans == "N":
+        return
+
     label_map_dict = label_map_util.get_label_map_dict(label_map_path)
 
-    # print(FLAGS.data_dir)
-    # if FLAGS.set not in SETS:
-    #     raise ValueError('set must be in : {}'.format(SETS))
-    # if FLAGS.year not in YEARS:
-    #    raise ValueError('year must be in : {}'.format(YEARS))
-
-    # years = ['VOC2007', 'VOC2012']
-    # if FLAGS.year != 'merged':
-    # years = [FLAGS.year]
-
-    # ACTIONSET = ['tfrecord', 'imageset']
-    # if FLAGS.action not in ACTIONSET:
-    #     raise ValueError('action must be in : {}'.format(ACTIONSET))
-    # if FLAGS.action == 'tfrecord':
-    #     pass
-    # elif FLAGS.action == 'imageset':
-    #     gen_image_set(FLAGS.data_dir, FLAGS.year, FLAGS.imageset)
-    #     return
-
     for set_name, image_set_path in zip(('train', 'val'), (train_set, val_set)):
-        logging.info("Generate data set %s in %s.", set_name, image_set_path)
+        set_path = os.path.splitext(output_path)[0] + '_' + set_name + os.path.splitext(output_path)[1]
+        logging.info("Generate data set %s from %s at %s", set_name, image_set_path, set_path)
 
         examples_list = dataset_util.read_examples_list(image_set_path)
-        writer = tf.io.TFRecordWriter(
-            os.path.splitext(output_path)[0] + '_' + set_name + os.path.splitext(output_path)[1])
+        writer = tf.io.TFRecordWriter(set_path)
         step = max(len(examples_list) // 10 // 100 * 100, 10)
         for idx, example in enumerate(examples_list):
             if idx % step == 0:
@@ -321,7 +329,7 @@ def main(_):
                 xml_str = fid.read()
             xml = etree.fromstring(xml_str.encode('utf-8'))
 
-            data_dic = dataset_util.recursive_parse_xml_to_dict(xml) #['annotation']
+            data_dic = dataset_util.recursive_parse_xml_to_dict(xml)  # ['annotation']
             if 'annotation' in data_dic:
                 data = data_dic['annotation']
             elif 'Annotation' in data_dic:
@@ -366,3 +374,10 @@ python create_pascal_tf_record.py --data_dir=data_folder  --output_path=xxx.tfre
 # \data\pascal_label_map.pbtxt --year=VOC2012 --imageset=train --set=train --output_path=H:\pascal_train.record
 if __name__ == '__main__':
     app.run(main)
+
+"""
+
+python create_pascal_tf_record.py --data_dir=/media/dev/samples/officeflower --output_path=xxx.tfrecord
+
+
+"""
