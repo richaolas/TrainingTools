@@ -11,5 +11,7 @@ variables.*
 *.tfrecord
 *.pb
 build
+BUILD
 .ipynb_checkpoints
 .case
+.zip
