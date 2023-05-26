@@ -31,3 +31,31 @@ python create_pascal_tf_record.py --data_dir=/media/dev/samples/officeflower --o
 ```bash
 python pascal_tf_record_view.py data.tfrecord object_name
 ```
+
+4. train the model
+```bash
+python model_main_tf2.py --model_dir=/media/dev/develop/Projects/TrainingTools/.data/officeflower/models/20230526 --pipeline_config_path=/media/dev/develop/Projects/TrainingTools/.data/officeflower/models/pretrain_model/pipeline.config
+```
+
+5. during the training, you can use tensorboard to monitor the training loss status
+```bash
+tensorboard --logdir=log
+```
+
+6. export checkpoint to saved_model (which can test the model on host)
+```bash
+python exporter_main_v2.py --input_type image_tensor --pipeline_config_path pipeline.config \
+--trained_checkpoint_dir train_dir --output_directory exported-models
+```
+for example:
+```bash
+python exporter_main_v2.py --input_type image_tensor --pipeline_config_path /media/dev/develop/Projects/TrainingTools/.data/officeflower/models/pretrain_model/pipeline.config --trained_checkpoint_dir /media/dev/develop/Projects/TrainingTools/.data/officeflower/models/20230526 --output_directory /media/dev/develop/Projects/TrainingTools/.data/officeflower/models/20230526/export
+
+```
+
+7. export checkpoint to tflite saved_model
+the script convert_to_edgetpu.py can do this task automatic
+
+8. export to tflite_saved_model then convert saved_model to qu-tflite 
+
+9. compile the qu-tflite to edge-tpu, then deploy on the camera

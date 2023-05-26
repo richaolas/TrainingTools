@@ -19,30 +19,37 @@ import random
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 
 if len(physical_devices) > 0:
-
     for k in range(len(physical_devices)):
-
         tf.config.experimental.set_memory_growth(physical_devices[k], True)
-
         print('memory growth:', tf.config.experimental.get_memory_growth(physical_devices[k]))
-
     else:
-
         print("Not enough GPU hardware devices available")
 
+tools_script_path = '/media/dev/develop/DL/models/research/object_detection/export_tflite_graph_tf2.py'
+
 # checkpoint dir
+# parameter which must be set
+# /media/dev/develop/Projects/TrainingTools/.data/officeflower/models/20230526
 
-PATH_TO_CASE_BASE = '/media/dev/home/dev/TrainingTools/.data/officeflower'
-PATH_TO_CHECKPOINT = PATH_TO_CASE_BASE + '/train'
-PATH_TO_PIPELINE_CONFIG = PATH_TO_CASE_BASE + '/models/my_model_dir/pipeline.config'
-PATH_TO_MODEL_DIR_TFLITE = PATH_TO_CASE_BASE + '/models/export_model_dir_tflite'
+PATH_TO_CASE_BASE = '/media/dev/develop/Projects/TrainingTools/.data/officeflower'
+PATH_TO_CHECKPOINT = '/media/dev/develop/Projects/TrainingTools/.data/officeflower/models/20230526'
+PATH_TO_PIPELINE_CONFIG = \
+    '/media/dev/develop/Projects/TrainingTools/.data/officeflower/models/pretrain_model/pipeline.config'
+PATH_TO_MODEL_DIR_TFLITE = '/media/dev/develop/Projects/TrainingTools/.data/officeflower/models/20230526/export_tflite'
+images_path = '/media/dev/samples/officeflower/JPEGImages'
+
+# ---- do not modify the follow path
 PATH_TO_SAVED_MODEL_TFLITE = PATH_TO_MODEL_DIR_TFLITE + "/saved_model"
-# PATH_TO_OUTPUT_MODEL_TFLITE = PATH_TO_CASE_BASE + '/models/export_model_dir_tflite/model.tflite'
 PATH_TO_OUTPUT_MODEL_TFLITE_QUANTIZED = PATH_TO_MODEL_DIR_TFLITE + '/model_quantized.tflite'
-images_path = '/media/renjch/WORK/Samples/Customer/officeflower/JPEGImages'
-tools_script_path = '/media/renjch/TECH/DL/models/research/object_detection/export_tflite_graph_tf2.py'
 
-convert_saved_model_cmd = "{} --pipeline_config_path {} --trained_checkpoint_dir {} --output_directory{}".format(
+# PATH_TO_MODEL_DIR_TFLITE = PATH_TO_CASE_BASE + '/models/export_model_dir_tflite'
+# PATH_TO_SAVED_MODEL_TFLITE = PATH_TO_MODEL_DIR_TFLITE + "/saved_model"
+#
+# # PATH_TO_OUTPUT_MODEL_TFLITE = PATH_TO_CASE_BASE + '/models/export_model_dir_tflite/model.tflite'
+# PATH_TO_OUTPUT_MODEL_TFLITE_QUANTIZED = PATH_TO_MODEL_DIR_TFLITE + '/model_quantized.tflite'
+
+
+convert_saved_model_cmd = "python {} --pipeline_config_path {} --trained_checkpoint_dir {} --output_directory {}".format(
     tools_script_path,
     PATH_TO_PIPELINE_CONFIG,
     PATH_TO_CHECKPOINT,
@@ -50,12 +57,13 @@ convert_saved_model_cmd = "{} --pipeline_config_path {} --trained_checkpoint_dir
 )
 print(convert_saved_model_cmd)
 
+os.system(convert_saved_model_cmd)
+
 
 # /media/renjch/TECH/DL/models/research/object_detection/export_tflite_graph_tf2.py  \
 #     --pipeline_config_path /media/dev/home/dev/TrainingTools/.data/officeflower/models/my_model_dir/pipeline.config \
 #     --trained_checkpoint_dir /media/dev/home/dev/TrainingTools/.data/officeflower/train \
 #     --output_directory /media/dev/home/dev/TrainingTools/.data/officeflower/models/export_model_dir_tflite
-
 
 def file_name(file_dir):
     image_file = []
@@ -88,7 +96,7 @@ def representative_dataset():
         # yield [np.array(img[0], dtype=np.float32)] # also possible
 
 
-# Convert the model
+# Convert the model to quantized tflite model
 converter = tf.lite.TFLiteConverter.from_saved_model(PATH_TO_SAVED_MODEL_TFLITE)  # path to the SavedModel directory
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
@@ -106,6 +114,8 @@ with open(PATH_TO_OUTPUT_MODEL_TFLITE_QUANTIZED, 'wb') as f:
 # val = os.system('ls -al')
 # print(val)
 
-converter_edgetpu_cmd = 'edgetpu_compiler -s -o {} {}'.format(PATH_TO_MODEL_DIR_TFLITE, PATH_TO_OUTPUT_MODEL_TFLITE_QUANTIZED)
+# Use tpu-compiler to build the model to tpu-model
+converter_edgetpu_cmd = 'edgetpu_compiler -s -o {} {}'.format(PATH_TO_MODEL_DIR_TFLITE,
+                                                              PATH_TO_OUTPUT_MODEL_TFLITE_QUANTIZED)
 
 os.system(converter_edgetpu_cmd)
